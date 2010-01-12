@@ -10,7 +10,7 @@ s = Gem::Specification.new do |s|
  
   s.files = Dir['lib/**/*'] + %w{
     init.rb
-    README.rdoc
+    README.textile
     MIT-LICENSE
     CHANGELOG
   }
