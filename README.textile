@@ -1,0 +1,52 @@
+h1. ModelCache
+
+ModelCache is a simple caching plugin for Rails, using memcached. It provides caching abilities for your models, allowing to:
+* cache blocks of code in your model instance methods, based on a generic key (ActiveRecord cache_key is added behind the scenes)
+* cache your instance methods, optionally with a time-to-live setting
+* cache some generic code (e.g. in your class methods)
+
+h1. Example
+
+p. environment.rb:
+
+bc. require 'memcache'
+CACHE = MemCache.new('127.0.0.1')
+
+p. Your model:
+
+bc.. class Stuff < ActiveRecord::Base
+
+	def expensive_method
+		...
+	end
+	
+	def another_expensive_method
+		...
+	end
+	
+	cache_method :expensive_method, :another_expensive_method
+	
+	def third_expensive_method
+		...
+	end
+	
+	cache_method_for_time :third_expensive_method, 1.hour
+	
+	def partially_expensive_method
+		...
+		cache :calculation do
+			...
+		end
+	end
+	
+	def self.some_class_method
+		ModelCache.cache(:this_would_be_persistent, 5.minutes) do
+			...
+		end
+	end
+
+end
+
+p. Cached!
+
+Copyright (c) 2010 Frantisek Havluj, released under the MIT license
