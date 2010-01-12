@@ -1,7 +1,7 @@
 module ModelCache  
 	
 	DO_CACHE = Rails.configuration.action_controller.perform_caching
-	NIL_OBJECT = Object.new
+	NIL_OBJECT = :this_is_my_nil_and_not_a_bill
 	DEFAULT_TIME = 12.hours
 	
 	def self.included(klass)
