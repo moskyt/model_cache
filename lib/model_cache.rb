@@ -1,7 +1,7 @@
 module ModelCache  
 	
 	DEFAULT_TIME = 12.hours unless const_defined?(:DEFAULT_TIME)
-	NIL_OBJECT = Object.new unless const_defined?(:NIL_OBJECT)
+	NIL_OBJECT = :__i_have_no_idea_how_to_do_this_without_an_ugly_symbol unless const_defined?(:NIL_OBJECT)
 	
 	def self.included(klass)
 	  klass.extend ClassMethods
