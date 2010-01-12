@@ -1,7 +1,7 @@
 module ModelCache  
 	
-	DEFAULT_TIME = 12.hours
-	@@nil_object ||= Object.new
+	DEFAULT_TIME = 12.hours unless const_defined?(:DEFAULT_TIME)
+	NIL_OBJECT = Object.new unless const_defined?(:NIL_OBJECT)
 	
 	def self.included(klass)
 	  klass.extend ClassMethods
@@ -13,7 +13,7 @@ module ModelCache
 	
 	def self.cache(ckey, time = DEFAULT_TIME, &block)
     if Rails.configuration.action_controller.perform_caching && (result = CACHE.get(ckey))
-      if result == @@nil_object
+      if result == NIL_OBJECT
         nil
       else
         result
@@ -24,7 +24,7 @@ module ModelCache
         if result
           CACHE.set(ckey, result, time)
         else
-          CACHE.set(ckey, @@nil_object, time)
+          CACHE.set(ckey, NIL_OBJECT, time)
         end
       end
       result
