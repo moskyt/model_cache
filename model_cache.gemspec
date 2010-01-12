@@ -8,7 +8,7 @@ s = Gem::Specification.new do |s|
   s.homepage = "http://github.com/moskyt/model-cache"
   s.has_rdoc = false
  
-  s.files = Dir['lib/**/*'] ++ %w{
+  s.files = Dir['lib/**/*'] + %w{
     README.rdoc
     MIT-LICENSE
     CHANGELOG
