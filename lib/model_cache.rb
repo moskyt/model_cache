@@ -1,8 +1,7 @@
 module ModelCache  
 	
-	DO_CACHE = Rails.configuration.action_controller.perform_caching
-	NIL_OBJECT = :this_is_my_nil_and_not_a_bill
 	DEFAULT_TIME = 12.hours
+	@@nil_object ||= Object.new
 	
 	def self.included(klass)
 	  klass.extend ClassMethods
@@ -13,19 +12,19 @@ module ModelCache
   end
 	
 	def self.cache(ckey, time = DEFAULT_TIME, &block)
-    if DO_CACHE && (result = CACHE.get(ckey))
-      if result == NIL_OBJECT
+    if Rails.configuration.action_controller.perform_caching && (result = CACHE.get(ckey))
+      if result == @@nil_object
         nil
       else
         result
       end
     else
       result = block.call
-      if DO_CACHE
+      if Rails.configuration.action_controller.perform_caching
         if result
           CACHE.set(ckey, result, time)
         else
-          CACHE.set(ckey, NIL_OBJECT, time)
+          CACHE.set(ckey, @@nil_object, time)
         end
       end
       result
@@ -50,7 +49,7 @@ module ModelCache
   		end    
   		define_method :"__is_cached_#{sym}?" do |*args|
   			ckey = [self.cache_key, sym, *args]
-  			!!( DO_CACHE && CACHE.get(ckey) )
+  			!!( Rails.configuration.action_controller.perform_caching && CACHE.get(ckey) )
   		end
   		define_method :"__uncache_#{sym}" do |*args|
   			ckey = [self.cache_key, sym, *args]
