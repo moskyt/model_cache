@@ -12,23 +12,32 @@ module ModelCache
   end
 	
 	def self.cache(ckey, time = DEFAULT_TIME, &block)
-    if Rails.configuration.action_controller.perform_caching && (result = CACHE.get(ckey))
+	  cache_hit = false
+    if Rails.configuration.action_controller.perform_caching 
+      result = CACHE.get(ckey) rescue nil
+      if result
+        cache_hit = true
+      end
       if result == NIL_OBJECT
         nil
       else
         result
       end
-    else
+    end
+    unless cache_hit
       result = block.call
       if Rails.configuration.action_controller.perform_caching
-        if result
-          CACHE.set(ckey, result, time)
-        else
-          CACHE.set(ckey, NIL_OBJECT, time)
-        end
+        begin
+          if result
+            CACHE.set(ckey, result, time)
+          else
+            CACHE.set(ckey, NIL_OBJECT, time)
+          end
+        end rescue nil
       end
       result
     end
+    result
   end
 	
 	
