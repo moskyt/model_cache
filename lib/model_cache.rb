@@ -10,30 +10,44 @@ module ModelCache
 	def cache(key, time = DEFAULT_TIME, &block)
 	  ModelCache::cache([self.cache_key, key], time, &block)
   end
-	
+  	
 	def self.cache(ckey, time = DEFAULT_TIME, &block)
 	  cache_hit = false
     if Rails.configuration.action_controller.perform_caching 
-      result = CACHE.get(ckey) rescue nil
-      if result
-        cache_hit = true
-      end
-      if result == NIL_OBJECT
-        nil
+      if CACHE.class.name == 'Memcached'
+        begin
+          result = CACHE.get(ckey.hash.to_s)
+          cache_hit = true
+        rescue Memcached::NotFound => e
+        end
+      elsif CACHE.class.name == 'MemCache'
+        result = CACHE.get(ckey.hash.to_s)
+        if result
+          cache_hit = true
+        end
+        if result == NIL_OBJECT
+          nil
+        else
+          result
+        end
       else
-        result
+        raise "CACHE object not configured #{CACHE.inspect}!"
       end
     end
     unless cache_hit
       result = block.call
-      if Rails.configuration.action_controller.perform_caching
-        begin
+      if Rails.configuration.action_controller.perform_caching 
+        if CACHE.class.name == 'MemCache'
           if result
-            CACHE.set(ckey, result, time)
+            CACHE.set(ckey.hash.to_s, result, time)
           else
-            CACHE.set(ckey, NIL_OBJECT, time)
+            CACHE.set(ckey.hash.to_s, NIL_OBJECT, time)
           end
-        end rescue nil
+        elsif CACHE.class.name == 'Memcached'
+          CACHE.set(ckey.hash.to_s, result, time)
+        else
+          raise "CACHE object not configured #{CACHE.inspect}!"
+        end
       end
       result
     end
