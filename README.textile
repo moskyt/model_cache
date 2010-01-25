@@ -5,6 +5,8 @@ ModelCache is a simple caching plugin for Rails, using @memcached@. It provides 
 * cache your instance methods, optionally with a time-to-live setting
 * cache some generic code (e.g. in your class methods)
 
+Both memcached client gems, @memcache-client@ and @memcached@ are supported. You are just expected to create an instance of the client and store it in the @CACHE@ constant.
+
 h1. Installation
 
 p. As a gem:
@@ -21,10 +23,15 @@ bc. script/plugin install http://github.com/moskyt/model_cache.git
 
 h1. Example
 
-p. @environment.rb@ or an initializer:
+p. Create an initializer, for example @config/initializers/memcached.rb@, containing this code (if you are using @memcache-client@):
 
 bc. require 'memcache'
 CACHE = MemCache.new('127.0.0.1')
+
+p. or, if using @memcached@ gem:
+
+bc. require 'memcached'
+CACHE = Memcached.new('127.0.0.1')
 
 p. Your model:
 
@@ -44,7 +51,7 @@ bc.. class Stuff < ActiveRecord::Base
 		...
 	end
 	
-	cache_method_for_time :third_expensive_method, 1.hour
+	cache_method :third_expensive_method, :time => 1.hour
 	
 	def partially_expensive_method
 		...
@@ -61,6 +68,16 @@ bc.. class Stuff < ActiveRecord::Base
 
 end
 
-p. Cached!
+p. If you want to cache somewhere else than in _ActiveRecord::Base_ classes, you need to include the module explicitly:
 
-Copyright (c) 2010 Frantisek Havluj, released under the MIT license
+bc.. class Another
+  include ModelCache
+  
+	def expensive_method
+		...
+	end
+	
+	cache_method :expensive_method  
+end
+
+p. Copyright (c) 2010 Frantisek Havluj, released under the MIT license

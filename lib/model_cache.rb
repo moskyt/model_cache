@@ -57,8 +57,9 @@ module ModelCache
 	
 	module ClassMethods
   	def cache_method(*args)
+  	  opts = args.extract_options!
   		args.each do |sym|
-  		  cache_method_for_time(sym, DEFAULT_TIME)
+  		  cache_method_for_time(sym, (opts[:time], DEFAULT_TIME))
   		end
   	end
 
