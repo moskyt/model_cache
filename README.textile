@@ -80,4 +80,10 @@ bc.. class Another
 	cache_method :expensive_method  
 end
 
+p. @model-cache@ defines three methods for a cached method:
+
+* @__uncached_@_method_name_ -- the original method without the caching wrapper
+* @__is_cached_@_method_name_@?@ -- returns true if this method is cached (with respective arguments)
+* @__flush_@_method_name_ -- removes the cache entry explicitly from the cache
+
 p. Copyright (c) 2010 Frantisek Havluj, released under the MIT license

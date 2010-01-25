@@ -75,7 +75,7 @@ module ModelCache
   			ckey = [self.cache_key, sym, *args]
   			!!( Rails.configuration.action_controller.perform_caching && CACHE.get(ckey) )
   		end
-  		define_method :"__uncache_#{sym}" do |*args|
+  		define_method :"__flush_#{sym}" do |*args|
   			ckey = [self.cache_key, sym, *args]
   			CACHE.delete(ckey)
   		end
