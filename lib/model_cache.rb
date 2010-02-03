@@ -26,9 +26,7 @@ module ModelCache
           cache_hit = true
         end
         if result == NIL_OBJECT
-          nil
-        else
-          result
+          result = nil
         end
       else
         raise "CACHE object not configured #{CACHE.inspect}!"
