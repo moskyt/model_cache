@@ -32,7 +32,7 @@ module ModelCache
     end
     unless cache_hit
       result = block.call
-      if CACHE.class.name == 'MemCache'
+      if CACHE.class.name == 'MemCache' or CACHE.class.name == 'Dalli::Client'
         if result
           CACHE.set(ckey.hash.to_s, result, time)
         else

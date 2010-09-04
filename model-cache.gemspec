@@ -1,7 +1,7 @@
 require 'rubygems' unless defined?(Gem)
 s = Gem::Specification.new do |s|
   s.name = "model-cache"
-  s.version = "0.2.5"
+  s.version = "0.2.6"
   s.summary = "Rails plugin for caching in models."
   s.author = "Frantisek Havluj"
   s.email = "moskyt@rozhled.cz"
