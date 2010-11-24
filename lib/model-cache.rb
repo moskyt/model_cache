@@ -1,6 +1,6 @@
 module ModelCache  
 	
-	DEFAULT_TIME = 12.hours unless const_defined?(:DEFAULT_TIME)
+	DEFAULT_TIME = 12*3600 unless const_defined?(:DEFAULT_TIME)
 	NIL_OBJECT = :__i_have_no_idea_how_to_do_this_without_an_ugly_symbol unless const_defined?(:NIL_OBJECT)
 	
 	def self.included(klass)
@@ -73,7 +73,7 @@ module ModelCache
             cache_hit = true
           rescue Memcached::NotFound => e
           end
-        elsif CACHE.class.name == 'MemCache'
+        elsif CACHE.class.name == 'MemCache' or CACHE.class.name == 'Dalli::Client'
           result = CACHE.get(ckey.hash.to_s)
           if result
             cache_hit = true
