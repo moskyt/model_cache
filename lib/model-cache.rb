@@ -1,3 +1,5 @@
+require 'digest'
+
 module ModelCache  
 	
 	DEFAULT_TIME = 12*3600 unless const_defined?(:DEFAULT_TIME)
@@ -12,6 +14,7 @@ module ModelCache
   end
   	
 	def self.cache(ckey, time = DEFAULT_TIME, &block)
+	  ckey = ckey.hash.to_s(16)
 	  cache_hit = false
     if CACHE.class.name == 'Memcached'
       begin
@@ -61,12 +64,14 @@ module ModelCache
   		alias_method :"__noncached_#{sym}", sym
   		define_method sym do |*args|
   			ckey = [self.cache_key, sym, *args]
+    	  ckey = ckey.hash.to_s(16)
   			ModelCache.cache(ckey, time) do
           self.send(:"__noncached_#{sym}", *args)
   			end
   		end    
   		define_method :"__is_cached_#{sym}?" do |*args|
   			ckey = [self.cache_key, sym, *args]
+    	  ckey = ckey.hash.to_s(16)
         if CACHE.class.name == 'Memcached'
           begin
             result = CACHE.get(ckey.hash.to_s)
@@ -88,6 +93,7 @@ module ModelCache
   		end
   		define_method :"__flush_#{sym}" do |*args|
   			ckey = [self.cache_key, sym, *args]
+    	  ckey = ckey.hash.to_s(16)
   			CACHE.delete(ckey)
   		end
   	end
