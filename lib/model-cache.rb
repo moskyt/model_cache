@@ -63,14 +63,18 @@ module ModelCache
   	def cache_method_for_time(sym, time)
   		alias_method :"__noncached_#{sym}", sym
   		define_method sym do |*args|
-  			ckey = [self.cache_key, self.instance_variable_get(:@__invalidate_cache) ? "X" : '', sym, *args]
-    	  ckey = ckey.hash.to_s(16)
-  			ModelCache.cache(ckey, time) do
+        if self.instance_variable_get(:@__invalidate_cache) 
           self.send(:"__noncached_#{sym}", *args)
-  			end
+        else
+    			ckey = [self.cache_key, sym, *args]
+      	  ckey = ckey.hash.to_s(16)
+    			ModelCache.cache(ckey, time) do
+            self.send(:"__noncached_#{sym}", *args)
+    			end
+        end
   		end    
   		define_method :"__is_cached_#{sym}?" do |*args|
-  			ckey = [self.cache_key, self.instance_variable_get(:@__invalidate_cache) ? "X" : '', sym, *args]
+  			ckey = [self.cache_key, sym, *args]
     	  ckey = ckey.hash.to_s(16)
         if CACHE.class.name == 'Memcached'
           begin
